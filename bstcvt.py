@@ -48,7 +48,7 @@ def bst_to_utc(bst_time):
     # Convert to UTC
     utc_datetime = bst_datetime.astimezone(pytz.UTC)
 
-    return utc_datetime
+    return utc_datetime, bst_datetime
 
 
 def utc_to_local(utc_time):
@@ -58,18 +58,22 @@ def utc_to_local(utc_time):
 
 
 def convert_bst_to_local(time_str):
-    # Step 1: Parse the time string to a datetime.time object
     bst_time = parse_time(time_str)
+
     if bst_time is None:
         return "Invalid time format"
 
-    # Step 2: Convert BST to UTC
-    utc_time = bst_to_utc(bst_time)
-
-    # Step 3: Convert UTC to Pacific Time
+    utc_time, bst_datetime = bst_to_utc(bst_time)
     local_time = utc_to_local(utc_time)
 
-    return local_time.time()
+    # Format the output similar to Google's time conversion
+    bst_formatted = bst_datetime.strftime(
+        "%I:%M %p %A, British Summer Time (BST)")
+    local_formatted = local_time.strftime("%I:%M %p %A, Pacific Time (PT)")
+
+    result = f"{bst_formatted} is\n{local_formatted}"
+
+    return result
 
 
 def main():
@@ -81,7 +85,7 @@ def main():
     bst_time_str = args.time
 
     local_time = convert_bst_to_local(bst_time_str)
-    print(f"Local time: {local_time}")
+    print(local_time)
 
 
 if __name__ == '__main__':
